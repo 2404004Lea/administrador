@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Cursos — Plataforma de Aprendizaje</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #111118;
+            --border: rgba(255,255,255,0.07);
+            --text-primary: #f0ece4;
+            --text-secondary: #7a7a8a;
+            --accent: #c9a96e;
+            --accent-dim: rgba(201, 169, 110, 0.12);
+            --glow: rgba(201, 169, 110, 0.25);
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* Background texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,169,110,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(100,80,200,0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Grain overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        /* ─── HEADER ─── */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 3rem;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(10,10,15,0.7);
+            animation: slideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        nav a:hover { color: var(--text-primary); }
+
+        .btn-login {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 0.6rem 1.6rem;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-login:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 24px var(--glow);
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            animation: fadeUp 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        .eyebrow::before,
+        .eyebrow::after {
+            content: '';
+            width: 32px;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.5;
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3.5rem, 9vw, 7.5rem);
+            font-weight: 300;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.9s 0.45s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-subtitle {
+            max-width: 480px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            animation: fadeUp 0.9s 0.6s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            animation: fadeUp 0.9s 0.75s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        .btn-primary {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 0.9rem 2.4rem;
+            background: var(--accent);
+            color: var(--bg);
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: box-shadow 0.25s, transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 36px var(--glow), 0 8px 24px rgba(0,0,0,0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 0.9rem 2.4rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* Divider line */
+        .hero-divider {
+            width: 1px;
+            height: 64px;
+            background: linear-gradient(to bottom, transparent, var(--border), transparent);
+            margin: 4rem auto 0;
+            animation: fadeUp 0.9s 1s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        /* ─── STATS STRIP ─── */
+        .stats {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            animation: fadeUp 0.9s 0.9s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        .stat-item {
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            position: relative;
+        }
+
+        .stat-item + .stat-item {
+            border-left: 1px solid var(--border);
+        }
+
+        .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .stat-number span {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        /* ─── COURSES PREVIEW ─── */
+        .courses-section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: -0.01em;
+        }
+
+        .section-link {
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(201,169,110,0.3);
+            padding-bottom: 2px;
+            transition: border-color 0.2s;
+        }
+
+        .section-link:hover { border-color: var(--accent); }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .course-card {
+            background: var(--surface);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            background: rgba(17,17,24,0.95);
+        }
+
+        .course-card:hover .course-arrow {
+            transform: translateX(4px);
+            color: var(--accent);
+        }
+
+        .course-tag {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-dim);
+            display: inline-block;
+            padding: 0.25rem 0.7rem;
+            border-radius: 1px;
+            width: fit-content;
+        }
+
+        .course-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 400;
+            line-height: 1.2;
+        }
+
+        .course-desc {
+            font-size: 0.83rem;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .course-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .course-arrow {
+            transition: transform 0.2s, color 0.2s;
+            font-size: 1rem;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 2rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            letter-spacing: 0.06em;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { padding: 1.25rem 1.5rem; }
+            nav { display: none; }
+            .hero-title { font-size: clamp(3rem, 12vw, 5rem); }
+            .stats { grid-template-columns: 1fr; }
+            .stat-item + .stat-item { border-left: none; border-top: 1px solid var(--border); }
+            .courses-grid { grid-template-columns: 1fr; }
+            .courses-section { padding: 4rem 1.5rem; }
+            footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">C<span>ursos</span></div>
+        <nav>
+            <a href="public/login.html">Cursos</a>
+            
+        </nav>
+        <button class="btn-login" href='public/login.html'">Iniciar Sesión</button>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <p class="eyebrow">Plataforma de Aprendizaje</p>
+        <h1 class="hero-title">Aprende sin<br><em>límites</em></h1>
+        <p class="hero-subtitle">
+            Accede a cursos diseñados por expertos. Avanza a tu propio ritmo y adquiere las habilidades que el mundo exige.
+        </p>
+        <div class="hero-actions">
+            <button class="btn-primary" onclick="window.location.href='public/login.html'">Comenzar Ahora</button>
+            <button class="btn-ghost" onclick="window.location.href='#cursos.html'"> Catálogo</button>
+        </div>
+        <div class="hero-divider"></div>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-item">
+            <span class="stat-number">12<span>K+</span></span>
+            <span class="stat-label">Estudiantes activos</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">340<span>+</span></span>
+            <span class="stat-label">Cursos disponibles</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">98<span>%</span></span>
+            <span class="stat-label">Satisfacción</span>
+        </div>
+    </div>
+
+    <!-- COURSES -->
+    <section class="courses-section">
+        <div class="section-header">
+            <h2 class="section-title">Cursos Destacados</h2>
+            <a href="#" class="section-link">Ver todos →</a>
+        </div>
+        <div class="courses-grid">
+            <div class="course-card">
+                <span class="course-tag">Tecnología</span>
+                <h3 class="course-name">Desarrollo Web Moderno</h3>
+                <p class="course-desc">Desde HTML hasta frameworks avanzados. Construye aplicaciones reales desde el primer día.</p>
+                <div class="course-footer">
+                    <span>48 lecciones · 12h</span>
+                    <span class="course-arrow">→</span>
+                </div>
+            </div>
+            <div class="course-card">
+                <span class="course-tag">Diseño</span>
+                <h3 class="course-name">UI/UX con Figma</h3>
+                <p class="course-desc">Diseña interfaces profesionales con principios de experiencia de usuario probados en la industria.</p>
+                <div class="course-footer">
+                    <span>32 lecciones · 8h</span>
+                    <span class="course-arrow">→</span>
+                </div>
+            </div>
+            <div class="course-card">
+                <span class="course-tag">Negocios</span>
+                <h3 class="course-name">Marketing Digital</h3>
+                <p class="course-desc">Estrategias de crecimiento, SEO, redes sociales y analítica para potenciar tu marca.</p>
+                <div class="course-footer">
+                    <span>27 lecciones · 6h</span>
+                    <span class="course-arrow">→</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <span>© 2025 Cursos. Todos los derechos reservados.</span>
+        <span>Hecho con precisión &amp; propósito.</span>
+    </footer>
+</body>
+</html>

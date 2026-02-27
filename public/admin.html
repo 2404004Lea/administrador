@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Cursos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:          #0a0a0f;
+            --surface:     #111118;
+            --surface-2:   #16161f;
+            --border:      rgba(255, 255, 255, 0.07);
+            --text:        #f0ece4;
+            --muted:       #7a7a8a;
+            --accent:      #c9a96e;
+            --accent-glow: rgba(201, 169, 110, 0.20);
+            --accent-dim:  rgba(201, 169, 110, 0.08);
+            --placeholder: #3a3a4a;
+            --danger:      #e07070;
+            --danger-dim:  rgba(224, 112, 112, 0.10);
+            --danger-glow: rgba(224, 112, 112, 0.22);
+            --success-bg:  rgba(100, 200, 120, 0.10);
+            --success-bd:  rgba(100, 200, 120, 0.25);
+            --success-txt: #7ecf8e;
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            font-weight: 300;
+            font-size: 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(201,169,110,0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── NAV ── */
+        body > nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 3rem;
+            height: 64px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 15, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            gap: 2rem;
+            animation: slideDown 0.7s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        body > nav > h2 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        body > nav > header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        body > nav > header h1 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        body > nav > header h1::first-letter { color: var(--accent); }
+
+        #btnAbrirModal {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--bg);
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.4rem 1rem;
+            border-radius: 2px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: box-shadow 0.2s, transform 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #btnAbrirModal:hover {
+            box-shadow: 0 0 18px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        body > nav > button {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            padding: 0.45rem 1.2rem;
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: color 0.2s, border-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body > nav > button:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+
+        /* ── CONTAINER & GRID ── */
+        .container {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 3rem;
+            animation: fadeUp 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .grid:empty::after {
+            content: 'No hay cursos disponibles.';
+            display: block;
+            background: var(--surface);
+            padding: 5rem 2rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            grid-column: 1 / -1;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--surface);
+            padding: 2rem 2rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.22s;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover { background: var(--surface-2); }
+        .card:hover::before { opacity: 0.5; }
+
+        .card h3 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.35rem;
+            font-weight: 400;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        .card .profesor {
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-dim);
+            display: inline-block;
+            padding: 0.22rem 0.65rem;
+            border-radius: 1px;
+            width: fit-content;
+        }
+
+        .card .descripcion {
+            font-size: 0.85rem;
+            line-height: 1.68;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            padding-top: 0.75rem;
+            flex: 1;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-card {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 0.38rem 0.85rem;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, border-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            flex: 1;
+        }
+
+        .btn-editar {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(201,169,110,0.3);
+        }
+
+        .btn-editar:hover {
+            background: var(--accent-dim);
+            box-shadow: 0 0 10px var(--accent-glow);
+            border-color: rgba(201,169,110,0.55);
+        }
+
+        .btn-eliminar {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid rgba(224,112,112,0.25);
+        }
+
+        .btn-eliminar:hover {
+            background: var(--danger-dim);
+            box-shadow: 0 0 10px var(--danger-glow);
+            border-color: rgba(224,112,112,0.5);
+        }
+
+        /* ── MODAL OVERLAY ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(5, 5, 10, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        /* ── MODAL PANEL ── */
+        .modal {
+            width: 100%;
+            max-width: 460px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 2.8rem;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(20px) scale(0.98);
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+        }
+
+        .modal-crear::before,
+        .modal-editar::before {
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
+            opacity: 0.55;
+        }
+
+        .modal-eliminar::before {
+            background: linear-gradient(to right, transparent, var(--danger), transparent);
+            opacity: 0.55;
+        }
+
+        .modal-sm { max-width: 360px; }
+
+        .modal-close {
+            position: absolute;
+            top: 1.1rem; right: 1.3rem;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0.2rem 0.4rem;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: var(--text); }
+
+        .modal-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+        }
+
+        .modal-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .modal-crear .modal-eyebrow,
+        .modal-editar .modal-eyebrow { color: var(--accent); }
+        .modal-eliminar .modal-eyebrow { color: var(--danger); }
+
+        .modal h2 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+            line-height: 1.1;
+        }
+
+        .modal-subtitle {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-bottom: 1.8rem;
+            line-height: 1.55;
+        }
+
+        .modal-subtitle strong { color: var(--text); font-weight: 400; }
+
+        /* ── FORM ── */
+        .modal-form { display: flex; flex-direction: column; gap: 1.2rem; }
+
+        .field-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+        .field-label {
+            font-size: 0.68rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            transition: color 0.2s;
+        }
+
+        .field-group:focus-within .field-label { color: var(--accent); }
+
+        .modal-form input,
+        .modal-form textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 300;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+            resize: none;
+        }
+
+        .modal-form textarea { min-height: 90px; line-height: 1.6; }
+
+        .modal-form input::placeholder,
+        .modal-form textarea::placeholder { color: var(--placeholder); }
+
+        .modal-form input:hover,
+        .modal-form textarea:hover { border-color: rgba(255,255,255,0.13); }
+
+        .modal-form input:focus,
+        .modal-form textarea:focus {
+            border-color: rgba(201,169,110,0.5);
+            background: var(--accent-dim);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        /* Alert */
+        .modal-alert {
+            padding: 0.7rem 1rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            display: none;
+            margin-bottom: 0.4rem;
+        }
+
+        .modal-alert.visible { display: block; animation: fadeUp 0.3s both; }
+        .modal-alert.success { background: var(--success-bg); border: 1px solid var(--success-bd); color: var(--success-txt); }
+        .modal-alert.error   { background: var(--danger-dim); border: 1px solid rgba(224,112,112,0.25); color: var(--danger); }
+
+        /* Botones del modal */
+        .modal-btn-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.4rem;
+        }
+
+        .btn-modal {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            padding: 0.88rem 1.5rem;
+            border-radius: 3px;
+            cursor: pointer;
+            flex: 1;
+            transition: box-shadow 0.22s, transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-modal:hover  { transform: translateY(-1px); }
+        .btn-modal:active { transform: translateY(0); box-shadow: none; }
+
+        .btn-primary-modal {
+            background: var(--accent);
+            color: var(--bg);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary-modal:hover { box-shadow: 0 0 24px var(--accent-glow), 0 4px 14px rgba(0,0,0,0.3); }
+
+        .btn-danger-modal {
+            background: var(--danger);
+            color: #fff;
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger-modal:hover { box-shadow: 0 0 24px var(--danger-glow), 0 4px 14px rgba(0,0,0,0.3); }
+
+        .btn-ghost-modal {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost-modal:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+
+        /* ── ANIMATIONS ── */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to   { transform: translateY(0);     opacity: 1; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0);    }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            body > nav { padding: 0.9rem 1.2rem; height: auto; flex-wrap: wrap; }
+            body > nav > header { flex-direction: column; align-items: flex-start; gap: 0.5rem; flex: 100%; order: 2; }
+            body > nav > h2     { order: 1; }
+            body > nav > button { order: 3; }
+            .container { padding: 1.5rem 1rem; }
+            .grid { grid-template-columns: 1fr; }
+            .modal { padding: 2rem 1.5rem; }
+            .modal-btn-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <h2>Lista de Cursos</h2>
+    <header>
+        <h1>Panel de Administración</h1>
+        <button id="btnAbrirModal">+ Subir curso</button>
+    </header>
+    <button onclick="logout()">Salir</button>
+</nav>
+
+<!-- GRID -->
+<div class="container">
+    <div class="grid" id="lista"></div>
+</div>
+
+<!-- ══ MODAL: CREAR ══ -->
+<div class="modal-overlay" id="modalCrear">
+    <div class="modal modal-crear" role="dialog" aria-modal="true">
+        <button class="modal-close" data-close="modalCrear">×</button>
+        <p class="modal-eyebrow">Nuevo registro</p>
+        <h2>Subir Curso</h2>
+        <p class="modal-subtitle">Completa los campos para agregar un nuevo curso.</p>
+        <div class="modal-alert" id="alertCrear"></div>
+        <form class="modal-form" id="formCrear" novalidate>
+            <div class="field-group">
+                <label class="field-label" for="c_titulo">Título</label>
+                <input type="text" id="c_titulo" placeholder="Nombre del curso" required>
+            </div>
+            <div class="field-group">
+                <label class="field-label" for="c_profesor">Profesor</label>
+                <input type="text" id="c_profesor" placeholder="Nombre del profesor" required>
+            </div>
+            <div class="field-group">
+                <label class="field-label" for="c_descripcion">Descripción</label>
+                <textarea id="c_descripcion" placeholder="Breve descripción del curso" required></textarea>
+            </div>
+            <div class="modal-btn-row">
+                <button type="button" class="btn-modal btn-ghost-modal" data-close="modalCrear">Cancelar</button>
+                <button type="submit" class="btn-modal btn-primary-modal">Guardar Curso</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    /* ── Utilidades de modal ── */
+    function abrirModal(id) {
+        document.getElementById(id).classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModal(id) {
+        const overlay = document.getElementById(id);
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        const alerta = overlay.querySelector('.modal-alert');
+        if (alerta) { alerta.className = 'modal-alert'; alerta.textContent = ''; }
+    }
+
+    function mostrarAlerta(id, msg, tipo) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = `modal-alert ${tipo} visible`;
+    }
+
+    // Cerrar con data-close
+    document.querySelectorAll('[data-close]').forEach(btn =>
+        btn.addEventListener('click', () => cerrarModal(btn.dataset.close))
+    );
+
+    // Cerrar al clicar fuera
+    document.querySelectorAll('.modal-overlay').forEach(overlay =>
+        overlay.addEventListener('click', e => { if (e.target === overlay) cerrarModal(overlay.id); })
+    );
+
+    // Cerrar con Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape')
+            document.querySelectorAll('.modal-overlay.open').forEach(o => cerrarModal(o.id));
+    });
+
+    /* ── Cargar cursos ── */
+    async function cargarCursos() {
+        try {
+            const res = await fetch('/cursos');
+            const cursos = await res.json();
+            const lista = document.getElementById('lista');
+            lista.innerHTML = '';
+
+            cursos.forEach(curso => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${curso.titulo}</h3>
+                    <p class="profesor">Profesor: ${curso.profesor}</p>
+                    <p class="descripcion">${curso.descripcion}</p>
+
+                `;
+                lista.appendChild(card);
+            });
+        } catch (err) {
+            console.log('Error cargando cursos:', err);
+        }
+    }
+
+    /* ── Crear curso ── */
+    document.getElementById('btnAbrirModal').addEventListener('click', () => abrirModal('modalCrear'));
+
+    document.getElementById('formCrear').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('[type="submit"]');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+
+        try {
+            const res = await fetch('/cursos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    titulo:      document.getElementById('c_titulo').value,
+                    profesor:    document.getElementById('c_profesor').value,
+                    descripcion: document.getElementById('c_descripcion').value
+                })
+            });
+
+            if (res.status === 403) { mostrarAlerta('alertCrear', 'No autorizado. Inicia sesión.', 'error'); return; }
+            const data = await res.json();
+            mostrarAlerta('alertCrear', data.message || 'Curso guardado correctamente.', 'success');
+            this.reset();
+            cargarCursos();
+        } catch { mostrarAlerta('alertCrear', 'Error de conexión.', 'error'); }
+        finally { btn.disabled = false; btn.textContent = 'Guardar Curso'; }
+    });
+
+
+    /* ── Logout ── */
+    async function logout() {
+        await fetch('/logout', { credentials: 'include' });
+        window.location.href = 'index.html';
+    }
+
+    cargarCursos();
+</script>
+
+</body>
+</html>
